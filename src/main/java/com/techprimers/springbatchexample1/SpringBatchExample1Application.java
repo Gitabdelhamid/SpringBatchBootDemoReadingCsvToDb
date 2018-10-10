@@ -9,7 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 public class SpringBatchExample1Application {
-
+/**
+ * 
+ * @param args
+ */
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBatchExample1Application.class, args);
 	}
