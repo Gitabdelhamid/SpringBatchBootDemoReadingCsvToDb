@@ -1,6 +1,5 @@
 package com.techprimers.springbatchexample1.config;
 
-import com.techprimers.springbatchexample1.model.User;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -11,18 +10,58 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import com.techprimers.springbatchexample1.manager.BusinessServiceManager;
+import com.techprimers.springbatchexample1.model.User;
 
 @Configuration
 @EnableBatchProcessing
 public class SpringBatchConfig {
+	
+	@Autowired
+	BusinessServiceManager manager;
+	
+	  private Resource outputResource = new FileSystemResource("out/outputData.csv");
+	  
+	  
+//	    @Bean
+//	    public FlatFileItemWriter<User> writer()
+//	    {
+//	        //Create writer instance
+//	        FlatFileItemWriter<User> writer = new FlatFileItemWriter<>();
+//	         
+//	        //Set output file location
+//	        writer.setResource(outputResource);
+//	         
+//	        //All job repetitions should "append" to same output file
+//	        writer.setAppendAllowed(true);
+//	         
+//	        //Name field values sequence based on object properties
+//	        writer.setLineAggregator(new DelimitedLineAggregator<User>() {
+//	            {
+//	                setDelimiter(",");
+//	                setFieldExtractor(new BeanWrapperFieldExtractor<User>() {
+//	                    {
+//	                        setNames(new String[] { "id", "name", "dept" ,"salary","time","salaireBrute" });
+//	                    }
+//	                });
+//	            }
+//	        });
+//	        return writer;
+//	    }
 
     @Bean
     public Job job(JobBuilderFactory jobBuilderFactory,
@@ -32,7 +71,7 @@ public class SpringBatchConfig {
                    ItemWriter<User> itemWriter
     ) {
 
-        Step step = stepBuilderFactory.get("ETL-file-load")
+        Step step1 = stepBuilderFactory.get("ETL-file-load")
                 .<User, User>chunk(100)
                 .reader(itemReader)
                 .processor(itemProcessor)
@@ -42,7 +81,7 @@ public class SpringBatchConfig {
 
         return jobBuilderFactory.get("ETL-Load")
                 .incrementer(new RunIdIncrementer())
-                .start(step)
+                .start(step1)
                 .build();
     }
 
@@ -65,6 +104,7 @@ public class SpringBatchConfig {
 
         lineTokenizer.setDelimiter(",");
         lineTokenizer.setStrict(false);
+//        lineTokenizer.setNames(new String[]{ "id", "name", "dept" ,"salary","time","salaireBrute" });
         lineTokenizer.setNames(new String[]{"id", "name", "dept", "salary"});
 
         BeanWrapperFieldSetMapper<User> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
@@ -75,5 +115,4 @@ public class SpringBatchConfig {
 
         return defaultLineMapper;
     }
-
 }

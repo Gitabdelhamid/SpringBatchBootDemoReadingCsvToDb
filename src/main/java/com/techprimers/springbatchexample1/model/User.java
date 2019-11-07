@@ -16,8 +16,9 @@ public class User {
     private String dept;
     private Integer salary;
     private Date time;
+    private Double salaireBrute;
 
-    public User(Integer id, String name, String dept, Integer salary, Date time) {
+	public User(Integer id, String name, String dept, Integer salary, Date time) {
         this.id = id;
         this.name = name;
         this.dept = dept;
@@ -39,8 +40,19 @@ public class User {
     public String getName() {
         return name;
     }
+ 
 
-    public void setName(String name) {
+
+
+    public Double getSalaireBrute() {
+		return salaireBrute;
+	}
+
+	public void setSalaireBrute(Double salaireBrute) {
+		this.salaireBrute = salaireBrute;
+	}
+
+	public void setName(String name) {
         this.name = name;
     }
 
